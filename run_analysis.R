@@ -13,17 +13,13 @@ ytest <- read.table("UCI HAR Dataset//test/y_test.txt", stringsAsFactors = FALSE
 subtest <- read.table("UCI HAR Dataset//test/subject_test.txt", stringsAsFactors = FALSE)
 test <- cbind(group = "test", subtest, ytest, xtest)
 
-analysis <- rbind(train, test)
+analysis <- rbind(train, test)  # create single data set from both groups
 
-labels <- read.table("UCI HAR Dataset//features.txt")
-labels <- labels[,2]
-labels <- as.character(labels)
+labels <- read.table("UCI HAR Dataset//features.txt", stringsAsFactors = FALSE)
+labels <- labels[,2]  # select column containing variable names only
 names(analysis) <- c("group", "subject", "activity", labels)
 
-analysis$activity <- as.character(analysis$activity)
-
 # substitute readable activity names rather than numbers (from file "activity_labels.txt")
-
 analysis$activity <- gsub("1", "WALKING", analysis$activity)
 analysis$activity <- gsub("2", "WALKING_UPSTAIRS", analysis$activity)
 analysis$activity <- gsub("3", "WALKING_DOWNSTAIRS", analysis$activity)
@@ -31,8 +27,9 @@ analysis$activity <- gsub("4", "SITTING", analysis$activity)
 analysis$activity <- gsub("5", "STANDING", analysis$activity)
 analysis$activity <- gsub("6", "LAYING", analysis$activity)
 
-analysis <- analysis[ ,!duplicated(names(analysis))] # remove duplicated column names
-means_n_stds <- select(analysis, grep("std|mean", names(analysis))) # select only variables containing mean and standard deviation data
+analysis <- analysis[ ,!duplicated(names(analysis))]  # remove duplicated column names
+# select only variables containing mean and standard deviation data
+means_n_stds <- select(analysis, grep("std|mean", names(analysis)))  
 
 grouped <- group_by(analysis, subject, activity)
 summarised <- summarise_each(grouped, funs(mean))
