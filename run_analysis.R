@@ -29,9 +29,9 @@ analysis$activity <- gsub("6", "LAYING", analysis$activity)
 
 analysis <- analysis[ ,!duplicated(names(analysis))]  # remove duplicated column names
 # select only variables containing mean and standard deviation data
-means_n_stds <- select(analysis, grep("std|mean", names(analysis)))  
+means_n_stds <- analysis[ ,c(1:3, grep("std|mean", names(analysis)))]
 
-grouped <- group_by(analysis, subject, activity)
+grouped <- group_by(means_n_stds, subject, activity)
 summarised <- summarise_each(grouped, funs(mean))
 
 write.table(summarised, "tidy.txt", row.names = FALSE)
